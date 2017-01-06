@@ -1,0 +1,12 @@
+<?xml version = "1.0"?>
+
+<grammar type="application/grammar+xml" mode="voice" version="1.0">
+  <rule id="drinkChoice" scope="public">
+    <one-of>
+      <item>Pepsi</item>
+      <item>Coke</item>
+      <item>Seven Up</item>
+      <item>Nothing</item>
+    </one-of>
+  </rule>
+</grammar>

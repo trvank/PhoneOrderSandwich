@@ -1,0 +1,10 @@
+<?xml version = "1.0"?>
+
+<grammar type="application/grammar+xml" mode="voice" version="1.0">
+  <rule id="yesno" scope="public">
+    <one-of>
+      <item>yes</item>
+      <item>no</item>
+    </one-of>
+  </rule>
+</grammar>

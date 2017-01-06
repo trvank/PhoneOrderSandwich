@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1">
+
+
+<var name="cost" expr="0"/>
+<var name="sandwich_cost" expr="0"/>
+<var name="temp_cost" expr="0"/>
+<var name="drinks_cost" expr="0"/>
+<var name="drink_to_edit" expr=""/>
+<var name="chicken" expr="0"/>
+<var name="meatballs" expr="0"/>
+<var name="tunafish" expr="0"/>
+<var name="lettuce" expr="0"/>
+<var name="tomato" expr="0"/>
+<var name="olives" expr="0"/>
+<var name="pickles" expr="0"/>
+<var name="none" expr="0"/>
+<var name="pepsi_count" expr="0"/>
+<var name="coke_count" expr="0"/>
+<var name="sevenup_count" expr="0"/>
+<var name="latest_drink" expr=""/>
+<var name="veg2_check" expr="0"/>
+<var name="bread_cost" expr="2.00"/>
+<var name="meat_cost" expr="3.00"/>
+<var name="veg_cost" expr="0.50"/>
+<var name="soda_cost" expr="1.00"/>
+<var name="vegArray" expr="new Array ('lettuce', 'tomato', 'olives', 'pickles')"/>
+
+
+<menu id="startMenu">
+	<prompt bargein="false">
+		Hello, welcome to the order by phone sandwich shop.
+		Pick one of the following to add to your order: Sandwich or Drink
+	</prompt>
+	<noinput>
+		<prompt bargein="false">
+			i didn't catch that
+		</prompt>
+		<reprompt />
+	</noinput>
+	<nomatch>
+		<prompt bargein="false">
+			i may have misunderstood.
+		</prompt>
+		<reprompt />
+	</nomatch>
+
+	<choice next="#sandwichOrderForm">sandwich</choice>
+	<choice next="#drinkOrderForm">drink</choice>
+</menu>
+
+
+<menu id="nextMenu">
+	<prompt bargein="false">
+		Pick one of the following to add to your order: Sandwich or Drink or Done
+	</prompt>
+	<noinput>
+	<prompt bargein="false">
+			i didn't catch that
+		</prompt>
+		<reprompt />
+	</noinput>
+	<nomatch>
+<!--		<prompt bargein="false">
+			i may have misunderstood.
+		</prompt>-->
+		<reprompt />
+	</nomatch>
+
+	<choice next="#sandwichOrderForm">sandwich</choice>
+	<choice next="#drinkOrderForm">drink</choice>
+	<choice next="#total">Done</choice>
+</menu>
+
+
+<form id="sandwichOrderForm">
+<!--
+	<field name="sandwichYN">
+		<prompt bargein="false">
+			Would you like to order a sandwich?
+		</prompt>
+		<grammar type="application/grammar+xml" root="yn" mode="voice" version="1.0">
+			<rule id="yn" scope="public">
+				<one-of>
+					<item>yes</item>
+					<item>no</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Say yes or no
+			</prompt>
+			<reprompt />
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Say yes or no
+			</prompt>
+			<reprompt />
+		</nomatch>
+		<filled>
+			<prompt bargein="false">
+				you said <value expr="sandwichYN"/>
+			</prompt>
+		</filled>
+	</field>
+-->
+	<field name="bread">
+		<prompt bargein="false">
+			What type of bread would you like? wheat, rye, or sourdough.
+		</prompt>
+		<grammar type="application/grammar+xml" root="breadType" mode="voice" version="1.0">
+			<rule id="breadType" scope="public">
+				<one-of>
+					<item>wheat</item>
+					<item>rye</item>
+					<item>sourdough</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Pick one of the listed options
+			</prompt>
+			<reprompt />
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Please pick one of the available options.
+			</prompt>
+			<reprompt />
+		</nomatch>
+		<filled>
+			<assign name="temp_cost" expr="temp_cost + bread_cost"/>
+			<prompt bargein="false">
+				OK, we'll use <value expr="bread"/> bread
+			</prompt>
+		</filled>
+	</field>
+
+	<field name="meat">
+		<prompt bargein="false" count="1">
+			What type of meat would you like? Chicken, meat balls, tuna fish, or none
+		</prompt>
+		<prompt bargein="false" count="2">
+			 chicken, meat balls or tuna fish. Or you can say none if you don't want meat
+		</prompt>
+		<grammar type="application/grammar+xml" root="meatType" mode="voice" version="1.0">
+			<rule id="meatType" scope="public">
+				<one-of>
+					<item>chicken</item>
+					<item>meat balls</item>
+					<item>tuna fish</item>
+					<item>none</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Pick one of the following options
+			</prompt>
+			<reprompt />
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Please pick one of the following options
+			</prompt>
+			<reprompt />
+		</nomatch>
+		<filled>
+			<if cond="meat!='none'">
+				<assign name="temp_cost" expr="temp_cost + meat_cost"/>
+				<prompt bargein="false">
+					I've added <value expr="meat"/> to your sandwich
+				</prompt>
+			<else/>
+				<prompt bargein="false">
+					I've added no meat to your sandwich
+				</prompt>
+			</if>
+
+		</filled>
+	</field>
+
+	<field name="veg1">
+		<prompt bargein="false" count="1">
+			<!--Let's add veggies one at a time. If you don't want veggies say none, otherwise you can choose one from the following: lettuce, tomato, olives, and pickles -->
+			Any veggies? Choose one: lettuce, tomato, olives, pickles, or none
+		</prompt>
+		<prompt bargein="false" count="2">
+			 lettuce, tomato, olives, pickles.  Or say none if you don't want veggies
+		</prompt>
+		<grammar type="application/grammar+xml" root="vegType" mode="voice" version="1.0">
+			<rule id="vegType" scope="public">
+				<one-of>
+					<item>lettuce</item>
+					<item>tomato</item>
+					<item>olives</item>
+					<item>pickles</item>
+					<item>none</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Pick one of the following options
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Pick one of the following options
+			</prompt>
+			<reprompt/>
+		</nomatch>
+		<filled>
+			<if cond="veg1=='none'">
+				<prompt bargein="false">I've added no veggies to your sandwich</prompt>
+			<else/>
+				<prompt bargein="false">I've added <value expr="veg1"/> to your sandwich</prompt>
+			</if>
+
+			<if cond="veg1=='lettuce'">
+				<assign name="lettuce" expr="1"/>
+				<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+			<elseif cond="veg1=='tomato'"/>
+				<assign name="tomato" expr="1"/>
+				<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+			<elseif cond="veg1=='olives'"/>
+				<assign name="olives" expr="1"/>
+				<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+			<elseif cond="veg1=='pickles'"/>
+				<assign name="pickles" expr="1"/>
+				<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+			</if>
+		</filled>
+	</field>
+
+	<field name="veg2" cond="veg1!='none' &amp;&amp; veg2_check!='1'">
+		<prompt bargein="false">
+			What other veggies?
+		</prompt>
+		<grammar type="application/grammar+xml" root="vegType2" mode="voice" version="1.0">
+			<rule id="vegType2" scope="public">
+				<one-of>
+					<item>lettuce</item>
+					<item>tomato</item>
+					<item>olives</item>
+					<item>pickles</item>
+					<item>none</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Pick from lettuce, tomato, olives, pickles, or say none if you're finished with veggies
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Pick from lettuce, tomato, olives, pickles, or say none if you're finished with veggies
+			</prompt>
+			<reprompt/>
+		</nomatch>
+
+		<filled>
+			<if cond="veg2=='none'">
+				<prompt bargein="false">
+					I've added no more veggies to your sandwich
+				</prompt>
+			</if>
+			<if cond="veg2=='lettuce'">
+				<if cond="lettuce=='1'">
+					<prompt bargein="false">You already have <value expr="veg2"/> on your sandwich</prompt>
+					<clear namelist="veg2"/>
+				<else/>
+					<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+					<prompt bargein="false">I've added <value expr="veg2"/> to your sandwich</prompt>
+					<assign name="lettuce" expr="1"/>
+					<clear namelist="veg2"/>
+				</if>
+			<elseif cond="veg2=='tomato'"/>
+				<if cond="tomato=='1'">
+					<prompt bargein="false">You already have <value expr="veg2"/> on your sandwich</prompt>
+					<clear namelist="veg2"/>
+				<else/>
+					<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+					<prompt bargein="false">I've added <value expr="veg2"/> to your sandwich</prompt>
+					<assign name="tomato" expr="1"/>
+					<clear namelist="veg2"/>
+				</if>
+			<elseif cond="veg2=='olives'"/>
+				<if cond="olives=='1'">
+					<prompt bargein="false">You already have <value expr="veg2"/> on your sandwich</prompt>
+					<clear namelist="veg2"/>
+				<else/>
+					<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+					<prompt bargein="false">I've added <value expr="veg2"/> to your sandwich</prompt>
+					<assign name="olives" expr="1"/>
+					<clear namelist="veg2"/>
+				</if>
+			<elseif cond="veg2=='pickles'"/>
+				<if cond="pickles=='1'">
+					<prompt bargein="false">You already have <value expr="veg2"/> on your sandwich</prompt>
+					<clear namelist="veg2"/>
+				<else/>
+					<assign name="temp_cost" expr="temp_cost + veg_cost"/>
+					<prompt bargein="false">I've added <value expr="veg2"/> to your sandwich</prompt>
+					<assign name="pickles" expr="1"/>
+					<clear namelist="veg2"/>
+				</if>
+			</if>
+
+			<if cond="lettuce=='1' &amp;&amp; tomato=='1' &amp;&amp; olives=='1' &amp;&amp; pickles=='1'">
+				<assign name="veg2_check" expr="1"/>
+				<prompt bargein="false">You ordered all available veggies for you sandwich</prompt>
+			</if>
+		</filled>
+	</field>
+
+	<block>
+		<prompt bargein="false">Sandwich complete</prompt>
+	</block>
+
+	<field name="confirm">
+
+		<prompt bargein="false" count="1">
+			Would you like to review, edit, or remove this sandwich. Or you can continue
+		</prompt>
+		<prompt bargein="false" count="2">
+			review, edit, delete, or continue
+		</prompt>
+		<grammar type="application/grammar+xml" root="conf" mode="voice" version="1.0">
+			<rule id="conf" scope="public">
+				<one-of>
+					<item>review</item>
+					<item>edit</item>
+					<item>remove</item>
+					<item>continue</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Pick one of the following
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Pick one of the following
+			</prompt>
+			<reprompt/>
+		</nomatch>
+
+		<filled>
+			<if cond="confirm=='review'">
+					<prompt bargein="false">You have a sandwich with <value expr="bread"/> bread,</prompt>
+
+					<if cond="meat=='none'">
+						<prompt bargein="false">no meat, and</prompt>
+					<else/>
+						<prompt bargein="false"><value expr="meat"/>, and</prompt>
+					</if>
+
+					<if cond="veg1=='none'">
+						<prompt bargein="false">no veggies</prompt>
+					<else/>
+						<if cond="lettuce=='1'">
+							<prompt bargein="false">lettuce, </prompt>
+						</if>
+						<if cond="tomato=='1'">
+							<prompt bargein="false">tomato, </prompt>
+						</if>
+						<if cond="olives=='1'">
+							<prompt bargein="false">olives, </prompt>
+						</if>
+						<if cond="pickles=='1'">
+							<prompt bargein="false">pickles, </prompt>
+						</if>
+					</if>
+
+					<prompt bargein="false">
+					This sandwich is
+						<say-as
+							interpret-as="vxml:currency">
+								USD<value expr="temp_cost"/>
+						</say-as>
+					</prompt>
+				<prompt bargein="false">and now?</prompt>
+				<clear namelist="confirm"/>
+			</if>
+
+			<if cond="confirm=='edit'">
+				<prompt bargein="false">going to edit</prompt>
+				<clear namelist="edit"/>
+			</if>
+			<if cond="confirm=='remove'">
+				<prompt bargein="false">Ok, I've removed that sandwich</prompt>
+				<assign name="lettuce" expr="0"/>
+				<assign name="tomato" expr="0"/>
+				<assign name="olives" expr="0"/>
+				<assign name="pickles" expr="0"/>
+				<assign name="veg2_check" expr="0"/>
+				<assign name="temp_cost" expr="0"/>
+				<goto next="#nextMenu"/>
+			</if>
+			<if cond="confirm=='continue'">
+
+				<prompt bargein="false">You have a sandwich with <value expr="bread"/> bread,</prompt>
+
+				<if cond="meat=='none'">
+					<prompt bargein="false">no meat, and</prompt>
+					<else/>
+					<prompt bargein="false"><value expr="meat"/>, and</prompt>
+				</if>
+
+				<if cond="veg1=='none'">
+					<prompt bargein="false">no veggies</prompt>
+					<else/>
+					<if cond="lettuce=='1'">
+						<prompt bargein="false">lettuce, </prompt>
+					</if>
+					<if cond="tomato=='1'">
+						<prompt bargein="false">tomato, </prompt>
+					</if>
+					<if cond="olives=='1'">
+						<prompt bargein="false">olives, </prompt>
+					</if>
+					<if cond="pickles=='1'">
+						<prompt bargein="false">pickles, </prompt>
+					</if>
+				</if>
+
+				<prompt bargein="false">
+					This sandwich is
+					<say-as
+							interpret-as="vxml:currency">
+						USD<value expr="temp_cost"/>.
+					</say-as>.
+				</prompt>
+
+				<prompt bargein="false">
+					And your total for drinks so far is
+					<say-as
+							interpret-as="vxml:currency">
+						USD<value expr="drinks_cost"/>.
+					</say-as>
+				</prompt>
+				<assign name="cost" expr="cost + temp_cost"/>
+				<assign name="sandwich_cost" expr="temp_cost"/> <!-- added by scott so we can sum drinks_cost + sandwich_cost at the end -->
+				<assign name="lettuce" expr="0"/>
+				<assign name="tomato" expr="0"/>
+				<assign name="olives" expr="0"/>
+				<assign name="pickles" expr="0"/>
+				<assign name="veg2_check" expr="0"/>
+				<assign name="temp_cost" expr="0"/>
+				<prompt bargein="false"> Let's continue.</prompt>
+				<goto next="#nextMenu"/>
+			</if>
+
+		</filled>
+	</field>
+
+	<field name="edit">
+		<prompt bargein="false">Pick one to edit: bread, meat, veggies or say back to go back.</prompt>
+		<grammar type="application/grammar+xml" root="conf" mode="voice" version="1.0">
+			<rule id="conf" scope="public">
+				<one-of>
+					<item>bread</item>
+					<item>veggies</item>
+					<item>meat</item>
+					<item>back</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that.
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.
+			</prompt>
+			<reprompt/>
+		</nomatch>
+
+		<filled>
+			<prompt bargein="false">you said <value expr="edit"/>.</prompt>
+
+			<if cond="edit=='bread'">
+				<prompt bargein="false">Ok, let's edit the bread.</prompt>
+				<clear namelist="bread confirm edit"/>
+			</if>
+			<if cond="edit=='meat'">
+				<prompt bargein="false">Ok, let's edit the meat.</prompt>
+				<assign name="temp_cost" expr="temp_cost - meat_cost"/>
+				<clear namelist="meat confirm edit"/>
+			</if>
+			<if cond="edit=='veggies'">
+				<prompt bargein="false">Ok, I've cleared the veggies from this sandwich.</prompt>
+				<if cond="lettuce=='1'">
+					<assign name="temp_cost" expr="temp_cost - veg_cost"/>
+					<assign name="lettuce" expr="0"/>
+				</if>
+				<if cond="tomato=='1'">
+					<assign name="temp_cost" expr="temp_cost - veg_cost"/>
+					<assign name="tomato" expr="0"/>
+				</if>
+				<if cond="olives=='1'">
+					<assign name="temp_cost" expr="temp_cost - veg_cost"/>
+					<assign name="olives" expr="0"/>
+				</if>
+				<if cond="pickles=='1'">
+					<assign name="temp_cost" expr="temp_cost - veg_cost"/>
+					<assign name="pickles" expr="0"/>
+				</if>
+				<assign name="veg2_check" expr="0"/>
+				<clear namelist="veg1 veg2 confirm edit"/>
+			</if>
+			<if cond="edit='back'">
+				<clear namelist="confirm edit"/>
+			</if>
+
+		</filled>
+	</field>
+
+</form>
+
+<form id="drinkOrderForm">
+	<field name="drinkField">
+		<grammar src="drinkChoice.grxml" type="application/grammar+xml"/>
+		<prompt bargein="false" count="1">
+			What type of drink would you like?
+		</prompt>
+		<prompt bargein="false" count="2">
+			Coke, Pepsi, Seven Up, or None?
+		</prompt>
+		<nomatch>
+			<prompt bargein="false">
+				I may have misunderstood. Pick one of:
+			</prompt>
+			<reprompt />
+		</nomatch>
+		<noinput>
+			<prompt bargein="false">
+				I missed that. Pick one of:
+			</prompt>
+			<reprompt />
+		</noinput>
+		<filled>
+			<if cond="drinkField=='Pepsi'">
+				<prompt bargein="false">I've added one Pepsi to your order.</prompt>
+				<assign name="pepsi_count" expr="1+parseInt(pepsi_count)"/>
+				<assign name="drinks_cost" expr="soda_cost+parseInt(drinks_cost)"/>
+			<elseif cond="drinkField=='Coke'"/>
+				<prompt bargein="false">I've added one Coke to your order.</prompt>
+				<assign name="coke_count" expr="1+parseInt(coke_count)"/>
+				<assign name="drinks_cost" expr="soda_cost+parseInt(drinks_cost)"/>
+			<elseif cond="drinkField=='Seven Up'"/>
+				<prompt bargein="false">I've added one Seven Up to your order.</prompt>
+				<assign name="sevenup_count" expr="1+parseInt(sevenup_count)"/>
+				<assign name="drinks_cost" expr="soda_cost+parseInt(drinks_cost)"/>
+			<else/> <prompt bargein="false">No drink added to your order.</prompt>
+			</if>
+			<assign name="latest_drink" expr="drinkField"/>
+		</filled>
+	</field>
+	
+	<field name="drinkConfirm">
+		<grammar type="application/grammar+xml" root="conf" mode="voice" version="1.0">
+			<rule id="conf" scope="public">
+				<one-of>
+					<item>review</item>
+					<item>edit</item>
+					<item>continue</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<prompt bargein="false" count="1">
+			Would you like to review, edit, or continue?
+		</prompt>
+		<prompt bargein="false" count="2">
+			review, edit, or continue.
+		</prompt>
+		<noinput>
+			<prompt bargein="false">
+			i didn't catch that. Pick one of the following:
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Pick one of the following:
+			</prompt>
+			<reprompt/>
+		</nomatch>
+		<filled>
+
+			<if cond="drinkConfirm=='review'">
+				<prompt bargein="false">You said review. You have ordered</prompt>
+				<if cond="parseInt(pepsi_count) > 0">
+					<prompt bargein="false"><value expr="pepsi_count"/> Pepsis.</prompt>
+				</if>
+				<if cond="parseInt(coke_count) > 0">
+					<prompt bargein="false"><value expr="coke_count"/> Cokes.</prompt>
+				</if>
+				<if cond="parseInt(sevenup_count) > 0">
+					<prompt bargein="false"><value expr="sevenup_count"/> Seven Ups.</prompt>
+				</if>
+				<if cond="parseInt(pepsi_count)==0 &amp;&amp; parseInt(coke_count)==0 &amp;&amp; parseInt(sevenup_count)==0">
+					<prompt bargein="false">No drinks</prompt>
+				</if>
+				<prompt bargein="false">
+					Your total for drinks so far is
+					<say-as
+							interpret-as="vxml:currency">
+						USD<value expr="drinks_cost"/>.
+					</say-as>
+				</prompt>
+				<clear namelist="drinkConfirm"/>
+
+			<elseif cond="drinkConfirm=='edit'">
+				<clear namelist="drinkEdit"/>
+			</elseif>
+
+			<elseif cond="drinkConfirm=='continue'"/>
+				<!-- It's dangerous to add drinks_cost to cost here, because subsequent edits/removes could remove multiple drinks -->
+				<prompt bargein="false">You said continue. You have ordered</prompt>
+				<if cond="parseInt(pepsi_count) > 0">
+					<prompt bargein="false"><value expr="pepsi_count"/> Pepsis</prompt>
+				</if>
+				<if cond="parseInt(coke_count) > 0">
+					<prompt bargein="false"><value expr="coke_count"/> Cokes</prompt>
+				</if>
+				<if cond="parseInt(sevenup_count) > 0">
+					<prompt bargein="false"><value expr="sevenup_count"/> Seven Ups</prompt>
+				</if>
+				<if cond="parseInt(pepsi_count)==0 &amp;&amp; parseInt(coke_count)==0 &amp;&amp; parseInt(sevenup_count)==0">
+					<prompt bargein="false">No drinks</prompt>
+				</if>
+				<prompt bargein="false">
+					to drink.  Your drink total is
+					<say-as
+							interpret-as="vxml:currency">
+						USD<value expr="drinks_cost"/>
+					</say-as>.
+				</prompt>
+				<clear namelist="drinkField drinkConfirm drinkEdit drinkEditChangeTo"/>
+				<prompt bargein="false"> Let's continue.</prompt>
+				<goto next="#nextMenu"/>
+			</if>
+		</filled>
+	</field>
+
+
+	<field name="drinkEdit">
+		<prompt bargein="false">Which drink would you like to change?</prompt>
+        <prompt bargein="false" count="2">Coke, Pepsi, Seven Up, or say Back to Go Back?</prompt>
+		<grammar type="application/grammar+xml" root="conf" mode="voice" version="1.0">
+			<rule id="conf" scope="public">
+				<one-of>
+					<item>Pepsi</item>
+					<item>Coke</item>
+					<item>Seven Up</item>
+					<item>Back</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Pick one of the following:
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Pick one of the following:
+			</prompt>
+			<reprompt/>
+		</nomatch>
+
+		<filled>
+			<if cond="drinkEdit=='Pepsi'">
+				<if cond="pepsi_count &lt; 1">
+					<prompt bargein="false">You already have 0 Pepsis.</prompt>
+                    <prompt bargein="false">You have</prompt>
+                    <if cond="coke_count &gt; 0">
+                        <prompt bargein="false"><value expr="coke_count"/> Cokes,  </prompt>
+                    </if>
+                    <if cond="sevenup_count &gt; 0">
+                        <prompt bargein="false"><value expr="sevenup_count"/>Seven Ups, </prompt>
+                    </if>
+                    <prompt bargein="false">that you can edit.</prompt>
+                    <!--<assign name="drink_to_edit" expr="'Pepsi'"/>-->
+                    <clear namelist="drinkEdit drinkEditChangeTo"/>
+				<else/>
+					<assign name="pepsi_count" expr="parseInt(pepsi_count) - 1"/>
+					<assign name="drinks_cost" expr="parseInt(drinks_cost) - 1"/>
+					<assign name="drink_to_edit" expr="'Pepsi'"/>
+				</if>
+			</if>
+			<if cond="drinkEdit=='Coke'">
+				<if cond="coke_count &lt; 1">
+					<prompt bargein="false">You already have 0 Cokes.</prompt>
+                    <prompt bargein="false">You have </prompt>
+                    <if cond="pepsi_count &gt; 0">
+                        <prompt bargein="false"><value expr="pepsi_count"/> Pepsi,  </prompt>
+                    </if>
+                    <if cond="sevenup_count &gt; 0">
+                        <prompt bargein="false"><value expr="sevenup_count"/>Seven Up, </prompt>
+                    </if>
+                    <prompt bargein="false">that you can edit.</prompt>
+					<!--<assign name="drink_to_edit" expr="'Coke'"/>-->
+                    <clear namelist="drinkEdit drinkEditChangeTo"/>
+				<else/>
+					<assign name="coke_count" expr="parseInt(coke_count) - 1"/>
+					<assign name="drinks_cost" expr="parseInt(drinks_cost) - 1"/>
+					<assign name="drink_to_edit" expr="'Coke'"/>
+				</if>
+			</if>
+			<if cond="drinkEdit=='Seven Up'">
+				<if cond="sevenup_count &lt; 1">
+					<prompt bargein="false">You already have 0 Seven Ups.</prompt>
+                    <prompt bargein="false">You have</prompt>
+                    <if cond="pepsi_count &gt; 0">
+                        <prompt bargein="false"><value expr="pepsi_count"/> Pepsi,  </prompt>
+                    </if>
+                    <if cond="coke_count &gt; 0">
+                        <prompt bargein="false"><value expr="coke_count"/>Coke, </prompt>
+                    </if>
+                    <prompt bargein="false">that you can edit.</prompt>
+					<!--<assign name="drink_to_edit" expr="'Seven Up'"/>-->
+                    <clear namelist="drinkEdit drinkEditChangeTo"/>
+				<else/>
+					<assign name="sevenup_count" expr="parseInt(sevenup_count) - 1"/>
+					<assign name="drinks_cost" expr="parseInt(drinks_cost) - 1"/>
+					<assign name="drink_to_edit" expr="'Seven Up'"/>
+				</if>
+			</if>
+			<if cond="drinkEdit=='back'">
+				<prompt bargein="false">Going back.</prompt>
+				<clear namelist="drinkConfirm drinkEdit drinkEditChangeTo"/>
+			</if>
+		</filled>
+	</field>
+
+	<field name="drinkEditChangeTo">
+		<prompt bargein="false">What do you want to change that to?</prompt>
+		<prompt bargein="false" count="2">Pepsi, Coke, Seven Up, or None?</prompt>
+
+		<grammar type="application/grammar+xml" root="conf" mode="voice" version="1.0">
+			<rule id="conf" scope="public">
+				<one-of>
+					<item>Pepsi</item>
+					<item>Coke</item>
+					<item>Seven Up</item>
+					<item>None</item>
+				</one-of>
+			</rule>
+		</grammar>
+		<noinput>
+			<prompt bargein="false">
+				i didn't catch that. Pick one of the following:
+			</prompt>
+			<reprompt/>
+		</noinput>
+		<nomatch>
+			<prompt bargein="false">
+				i may have misunderstood.  Pick one of the following:
+			</prompt>
+			<reprompt/>
+		</nomatch>
+
+		<filled>
+            <if cond="drinkEditChangeTo!='None'">
+                <prompt bargein="false">Removing 1 <value expr="drink_to_edit"/> and adding 1 <value expr="drinkEditChangeTo"/></prompt>
+			</if>
+            <if cond="drinkEditChangeTo=='Pepsi'">
+				<assign name="pepsi_count" expr="parseInt(pepsi_count) + 1"/>
+				<assign name="drinks_cost" expr="parseInt(drinks_cost) + 1"/>
+			</if>
+			<if cond="drinkEditChangeTo=='Coke'">
+				<assign name="coke_count" expr="parseInt(coke_count) + 1"/>
+				<assign name="drinks_cost" expr="parseInt(drinks_cost) + 1"/>
+			</if>
+			<if cond="drinkEditChangeTo=='Seven Up'">
+				<assign name="sevenup_count" expr="parseInt(sevenup_count) + 1"/>
+				<assign name="drinks_cost" expr="parseInt(drinks_cost) + 1"/>
+			</if>
+			<if cond="drinkEditChangeTo=='None'">
+					<prompt bargein="false">Replacing 1 <value expr="drink_to_edit"/>.</prompt>
+			</if>
+			<clear namelist="drinkConfirm drinkEdit drinkEditChangeTo"/>
+		</filled>
+	</field>
+</form>
+
+<form id="total">
+	<block>
+		<assign name="cost" expr="sandwich_cost + drinks_cost"/>
+		<prompt bargein="false">Your total comes to 
+			<say-as
+				interpret-as="vxml:currency">
+					USD<value expr="cost"/>
+			</say-as>.
+			Thanks for your order! Goodbye.
+		</prompt>
+	</block>
+</form>
+
+</vxml>
+
